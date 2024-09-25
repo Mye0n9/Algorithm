@@ -1,39 +1,36 @@
-# import sys
+import sys
+from collections import deque
 
-# sys.setrecursionlimit(10000)
+res = sys.maxsize
+p_res = 0
 
-# n, m = map(int,sys.stdin.readline().strip().split())
+N, M = map(int, sys.stdin.readline().strip().split())
 
-# relation = {key + 1: [] for key in range(n)}
+visited = [0 for _ in range(N)]
+pool = deque([])
+connections = {i+1:[] for i in range(N)}
 
-# for _ in range(m):
-#     p1, p2 = map(int, sys.stdin.readline().strip().split())
-#     relation[p1].append(p2)
-#     relation[p2].append(p1)
+for _ in range(M):
+    p1, p2 = map(int,sys.stdin.readline().strip().split())
+    connections[p1].append(p2)
+    connections[p2].append(p1)
 
-# pool = [0 for _ in range(n)]
-# visited = [0 for _ in range(n)]
-
-# def find_visited(n):
-#     visited[n-1] = 1
-#     if 0 not in visited:
-#         return sum(pool)
-#     else:
-#         for idx in range(n):
-#             if visited[idx] == 0:
-#                 pool[idx]+=1 # 방문하지 않았다면 1씩 증가
-        
-#         for i in relation[n]:
-#             visited[i-1] =1 # 방문 했다면 방문했다고 표시
-
-#         for pos in relation[n]:
-#             find_visited(pos+1) # 다음 이웃 찾아서 방문 시작
-
-# res = []
-
-# for num in range(n):
-#     res.append(find_visited(num+1))
-# print(res)
-        
-
-         
+for p in range(N):
+    pivot = p
+    visited[pivot] = 1
+    pool.append(pivot)
+    while 0 in visited:
+        for n_points in connections[pivot+1]:
+            if visited[n_points-1] == 0:
+                visited[n_points-1] = visited[pivot]+1
+                pool.append(n_points)
+        pool.popleft()
+        pivot = pool[0]-1
+    
+    if sum(visited) < res:
+        p_res = p+1
+        res = sum(visited)
+    
+    visited = [0 for _ in range(N)]
+    pool = deque([])
+print(p_res)
